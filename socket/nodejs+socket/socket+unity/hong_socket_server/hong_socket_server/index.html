@@ -1,0 +1,88 @@
+<html>
+<head>
+	<title>Chat with socket.io and node.js</title>
+	<style>
+		#chat{
+			height:500px;
+		}
+	</style>
+</head>
+<body>
+	<div id="chat"></div>
+	<form id="send-message">
+		<input size="35" id="message"/>
+		<input type="submit"/>
+                
+                
+                 <input type="button" id="this_my_name" value="set name" />
+	</form>
+	
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+            
+           var socket = io.connect();
+			var $messageForm = $('#send-message');
+                        var $this_my_name = $('#this_my_name');
+                        var $messageBox = $('#message');
+			var $chat = $('#chat');
+            
+            
+              function switchRoom(room){
+            
+		socket.emit('switchRoom', room);
+                
+                
+	}//end switch
+        
+        
+		jQuery(function($){
+                    
+			
+			
+			$messageForm.submit(function(e){
+				e.preventDefault();
+				socket.emit('send message', $messageBox.val());
+				$messageBox.val('');
+			});
+                        
+                        $this_my_name.click(function(){
+                           
+                               // e.preventDefault();
+				socket.emit('adduser', "hollychirst");
+				//$messageBox.val('');
+                                alert( "set username." );
+  
+                                });
+			
+			socket.on('new message', function(username, data){
+				$chat.append(username+" says: "+data + "<br/>");
+			});
+                        
+                        
+                       
+        
+        
+        socket.on('updaterooms', function(rooms, current_room) {
+		$('#rooms').empty();
+		$.each(rooms, function(key, value) {
+			if(value == current_room){
+                            
+				$('#rooms').append('<div>' + value + '</div>');
+			}
+			else {
+				$('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
+			}
+		});
+	}); //end updated rooms
+                        
+		});  //end jQuery(function($){
+	</script>
+        
+        
+        <div style="float:left;width:100px;border-right:1px solid black;height:300px;padding:10px;overflow:scroll-y;">
+	<b>ROOMS</b>
+	<div id="rooms"></div>
+</div>
+</body>
+</html>
